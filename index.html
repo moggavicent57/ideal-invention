@@ -1,0 +1,304 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Restaurant Ordering System</title>
+
+<style>
+*{box-sizing:border-box}
+body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:#f3f4f6;color:#222;transition:.3s}
+body.dark{background:#111827;color:#eee}
+header{background:linear-gradient(135deg,#111827,#374151);color:white;padding:25px;text-align:center;transition:.3s}
+body.dark header{background:#1f2937}
+.hero{background:url(' chapati.webp') center/cover no-repeat;height:300px;display:flex;align-items:center;justify-content:center;color:white;transition:.3s}
+.hero h2{background:rgba(0,0,0,.55);padding:20px;border-radius:10px}
+nav{display:flex;justify-content:center;flex-wrap:wrap;background:#111827;transition:.3s}
+body.dark nav{background:#1f2937}
+nav button{background:none;border:none;color:white;padding:14px 18px;cursor:pointer}
+nav button:hover{background:#374151}
+body.dark nav button:hover{background:#374151}
+.container{max-width:1100px;margin:auto;padding:25px}
+.card{background:white;padding:22px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.08);margin-bottom:20px;transition:.3s}
+body.dark .card{background:#1f2937;color:#eee;box-shadow:0 6px 18px rgba(0,0,0,.4);}
+.card:hover{transform:scale(1.02)}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.menu-item{background:white;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);overflow:hidden;transition:.2s}
+body.dark .menu-item{background:#1f2937;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.menu-item:hover{transform:translateY(-6px)}
+.menu-item img{width:100%;height:160px;object-fit:cover}
+.menu-info{padding:15px}
+.price{font-weight:bold}
+input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc}
+body.dark input, body.dark select, body.dark textarea{background:#374151;color:white;border:1px solid #555;}
+button.primary{background:#111827;color:white;border:none;padding:12px 18px;border-radius:6px;cursor:pointer}
+button.primary:hover{background:black}
+.hidden{display:none}
+.progress{height:20px;background:#ddd;border-radius:20px;overflow:hidden;margin-top:10px}
+body.dark .progress{background:#555;}
+.progress-bar{height:100%;background:#22c55e;width:0%;transition:1s}
+.search-box{max-width:300px;margin:auto;margin-bottom:20px}
+footer{background:#111827;color:white;text-align:center;padding:20px;margin-top:40px;transition:.3s}
+body.dark footer{background:#1f2937}
+.chart-container{max-width:600px;margin:auto}
+canvas{background:white;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+body.dark canvas{background:#1f2937}
+.preview-title{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:1.2em;}
+.preview-title svg{width:24px;height:24px;}
+iframe{border:0;border-radius:12px;}
+</style>
+</head>
+
+<body>
+<header>
+<h1>Local Restaurant</h1>
+<p>Online Food Ordering & Reservation System</p>
+<button onclick="toggleDark()">Dark Mode</button>
+</header>
+<div class="hero"><h2>Fresh Delicious Meals 🍗🍔</h2></div>
+
+<nav>
+<button onclick="showSection('preview')">Preview</button>
+<button onclick="showSection('menu')">Menu</button>
+<button onclick="showSection('order')">Order</button>
+<button onclick="showSection('reservation')">Reservation</button>
+<button onclick="showSection('tracking')">Delivery Tracker</button>
+<button onclick="showSection('login')">Customer Login</button>
+<button onclick="showSection('payment')">Payment</button>
+<button onclick="showSection('adminLogin')">Admin</button>
+<button onclick="showSection('dashboard')">Sales Chart</button>
+</nav>
+
+<div class="container">
+
+<!-- Preview with SVG icons + Location -->
+<div id="preview" class="section">
+  <div class="card">
+    <h2 class="preview-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3z"/></svg>
+      Project Purpose
+    </h2>
+    <p>Provide a fast, convenient, and user-friendly way for customers to order traditional meals and reserve tables online.</p>
+  </div>
+  <div class="card">
+    <h2 class="preview-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/></svg>
+      Objectives
+    </h2>
+    <ul>
+      <li>Show menu with images.</li>
+      <li>Enable online ordering and reservations.</li>
+      <li>Improve restaurant operational efficiency.</li>
+      <li>Increase customer reach online.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2 class="preview-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01"/></svg>
+      Problems
+    </h2>
+    <ul>
+      <li>Long waiting times for ordering.</li>
+      <li>Manual reservation management.</li>
+      <li>Limited online presence.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2 class="preview-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6M9 16h6M9 8h6"/></svg>
+      Causes
+    </h2>
+    <ul>
+      <li>Manual ordering and reservation system.</li>
+      <li>Communication delays.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2 class="preview-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>
+      Solutions
+    </h2>
+    <ul>
+      <li>Create a responsive website for ordering and reservation.</li>
+      <li>Provide instant confirmations.</li>
+      <li>Include menu images and online payment options.</li>
+    </ul>
+  </div>
+  <!-- Updated Location -->
+  <div class="card">
+    <h2 class="preview-title">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 2.21-3 5-3 5s-3-2.79-3-5a3 3 0 116 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11v10"/></svg>
+      Location
+    </h2>
+    <p>Muyenga, Kampala, Uganda</p>
+    <iframe src="https://www.google.com/maps?q=Muyenga,Kampala,Uganda&output=embed" width="100%" height="250" allowfullscreen="" loading="lazy"></iframe>
+  </div>
+  <button class="primary" onclick="showSection('menu')">Go to Menu & Ordering</button>
+</div>
+
+<!-- Menu Section -->
+<div id="menu" class="section hidden">
+<h2>Restaurant Menu</h2>
+<div class="search-box"><input placeholder="Search food" onkeyup="searchFood(this.value)"></div>
+<div class="menu-grid" id="menuList"></div>
+</div>
+
+<!-- Order Section -->
+<div id="order" class="section hidden">
+<h2>Order Food</h2>
+<div class="card">
+<form id="orderForm">
+<input id="customerName" placeholder="Your name" required>
+<select id="foodItem"></select>
+<input id="quantity" type="number" placeholder="Quantity" required>
+<div id="totalPrice">Total: $0</div>
+<button class="primary">Place Order</button>
+</form>
+</div>
+</div>
+
+<!-- Payment Section -->
+<div id="payment" class="section hidden">
+<h2>Payment</h2>
+<div class="card">
+<select><option>Visa Card</option><option>MasterCard</option><option>Mobile Money</option></select>
+<input placeholder="Card / Phone Number">
+<input placeholder="Name on card">
+<button class="primary">Pay Now</button>
+</div>
+</div>
+
+<!-- Reservation Section -->
+<div id="reservation" class="section hidden">
+<h2>Reserve Table</h2>
+<div class="card">
+<form id="reservationForm">
+<input id="resName" placeholder="Your name" required>
+<input id="resDate" type="date" required>
+<input id="resTime" type="time" required>
+<input id="guests" type="number" placeholder="Guests" required>
+<button class="primary">Reserve</button>
+</form>
+</div>
+</div>
+
+<!-- Delivery Tracker -->
+<div id="tracking" class="section hidden">
+<h2>Delivery Status</h2>
+<div class="card">
+<p>Your order is on the way</p>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+<button onclick="startTracking()">Start Tracking</button>
+</div>
+</div>
+
+<!-- Customer Login -->
+<div id="login" class="section hidden">
+<h2>Customer Account</h2>
+<div class="card">
+<input placeholder="Email">
+<input type="password" placeholder="Password">
+<button class="primary">Login</button><br><br>
+<input placeholder="Create Email">
+<input type="password" placeholder="Create Password">
+<button class="primary">Sign Up</button>
+</div>
+</div>
+
+<!-- Admin Login -->
+<div id="adminLogin" class="section hidden">
+<div class="card" style="max-width:400px;margin:auto">
+<h2>Admin Login</h2>
+<input id="adminPass" type="password" placeholder="Password">
+<button class="primary" onclick="loginAdmin()">Login</button>
+<p id="loginMsg"></p>
+</div>
+</div>
+
+<!-- Admin Dashboard -->
+<div id="admin" class="section hidden">
+<h2>Admin Dashboard</h2>
+<div class="card">
+<div id="totalOrders"></div>
+<div id="totalSales"></div>
+</div>
+<div class="card">
+<h3>Orders</h3>
+<ul id="orderList"></ul>
+</div>
+<div class="card">
+<h3>Reservations</h3>
+<ul id="reservationList"></ul>
+</div>
+</div>
+
+<!-- Sales Chart -->
+<div id="dashboard" class="section hidden">
+<h2>Sales Chart</h2>
+<div class="card chart-container">
+<canvas id="salesChart"></canvas>
+</div>
+</div>
+
+</div>
+<footer>Restaurant System Project © 2026</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Dark Mode
+function toggleDark(){document.body.classList.toggle("dark");}
+
+// Show Section
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+showSection('preview'); // Preview shown first
+
+// Menu & Ordering
+const menu=[
+{name:"Grilled Tilapia",price:8,img:"tilapia.webp  "},
+{name:" Fries & Chicken",price:10,img:" chicken.webp"},
+{name:"Goat",price:9,img:"  goat.webp"},
+{name:"Chapati & Beans",price:6,img:" chapati.webp"},
+{name:"Fresh Juice",price:4,img:"juice.webp"}
+];
+const menuList=document.getElementById("menuList");
+const foodSelect=document.getElementById("foodItem");
+function displayMenu(items){menuList.innerHTML="";items.forEach(item=>{let div=document.createElement("div");div.className="menu-item";div.innerHTML=`<img src="${item.img}"><div class='menu-info'><strong>${item.name}</strong><div class='price'>$${item.price}</div></div>`;menuList.appendChild(div);});}
+displayMenu(menu);
+menu.forEach(item=>{let opt=document.createElement("option");opt.value=item.name;opt.textContent=`${item.name} ($${item.price})`;foodSelect.appendChild(opt);});
+function searchFood(text){let filtered=menu.filter(m=>m.name.toLowerCase().includes(text.toLowerCase()));displayMenu(filtered);}
+
+// Orders & Reservations storage
+let orders=JSON.parse(localStorage.getItem('orders')||"[]");
+let reservations=JSON.parse(localStorage.getItem('reservations')||"[]");
+function render(){
+let orderList=document.getElementById('orderList');
+let reservationList=document.getElementById('reservationList');
+orderList.innerHTML="";reservationList.innerHTML="";
+let sales=0;
+orders.forEach(o=>{let li=document.createElement('li');li.textContent=`${o.name} ordered ${o.food} x${o.qty} - $${o.total}`;orderList.appendChild(li);sales+=Number(o.total);});
+reservations.forEach(r=>{let li=document.createElement('li');li.textContent=`${r.name} reserved ${r.guests} seats on ${r.date}`;reservationList.appendChild(li);});
+document.getElementById('totalOrders').textContent="Total Orders: "+orders.length;
+document.getElementById('totalSales').textContent="Total Sales: $"+sales;
+updateChart();}
+render();
+
+// Chart.js
+const ctx=document.getElementById('salesChart').getContext('2d');
+let salesChart=new Chart(ctx,{type:'bar',data:{labels:menu.map(m=>m.name),datasets:[{label:'Sales',data:menu.map(m=>orders.filter(o=>o.food===m.name).reduce((a,b)=>a+Number(b.qty),0)),backgroundColor:'rgba(34,197,94,0.7)'}]},options:{scales:{y:{beginAtZero:true}}}});
+function updateChart(){salesChart.data.datasets[0].data=menu.map(m=>orders.filter(o=>o.food===m.name).reduce((a,b)=>a+Number(b.qty),0));salesChart.update();}
+
+// Order form
+const quantityInput=document.getElementById("quantity");
+const totalDisplay=document.getElementById("totalPrice");
+function updateTotal(){let food=foodItem.value;let qty=quantityInput.value||0;let item=menu.find(m=>m.name===food);let total=item.price*qty;totalDisplay.textContent="Total: $"+total;}
+foodItem.onchange=updateTotal;quantityInput.oninput=updateTotal;
+
+orderForm.addEventListener('submit',function(e){e.preventDefault();let food=foodItem.value;let qty=quantity.value;let item=menu.find(m=>m.name===food);let total=item.price*qty;orders.push({name:customerName.value,food:food,qty:qty,total:total});localStorage.setItem('orders',JSON.stringify(orders));alert("Order placed successfully");this.reset();updateTotal();render();});
+
+reservationForm.addEventListener('submit',function(e){e.preventDefault();reservations.push({name:resName.value,date:resDate.value,time:resTime.value,guests:guests.value});localStorage.setItem('reservations',JSON.stringify(reservations));alert("Reservation successful");this.reset();render();});
+
+function startTracking(){document.getElementById("progressBar").style.width="100%";}
+function loginAdmin(){if(adminPass.value==='admin123') showSection('admin'); else loginMsg.textContent="Wrong password";}
+</script>
+</body>
+</html>
