@@ -1,0 +1,275 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uganda Restaurants Ordering & Admin</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4;color:#000;transition:0.3s;}
+header{background:#222;color:#fff;padding:20px;text-align:center;}
+header button{padding:8px 12px;border:none;border-radius:5px;background:#ff6600;color:white;cursor:pointer;}
+nav{display:flex;justify-content:center;margin:10px;}
+nav button{margin:0 10px;padding:8px;border:none;border-radius:5px;background:#007bff;color:white;cursor:pointer;}
+nav button.active{background:#28a745;}
+.search{text-align:center;margin:20px;}
+#searchBar{padding:10px;width:300px;}
+.restaurant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px;}
+.restaurant-card{background:white;padding:15px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);text-align:center;transition:0.3s;}
+.restaurant-card img{width:100%;border-radius:10px;height:150px;object-fit:cover;}
+.restaurant-card:hover{transform:translateY(-5px);box-shadow:0 10px 20px rgba(0,0,0,0.2);}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:20px;}
+.menu-item{background:white;border-radius:10px;box-shadow:0 3px 8px rgba(0,0,0,0.1);overflow:hidden;text-align:center;}
+.menu-item img{width:100%;height:150px;object-fit:cover;}
+.menu-item h4{margin:10px 0 5px;}
+.menu-item button{margin:10px;padding:8px;border:none;border-radius:5px;background:#28a745;color:white;cursor:pointer;}
+#cart{background:white;padding:10px;border-radius:10px;margin-top:10px;}
+.cart-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.cart-item button{background:#dc3545;color:white;padding:2px 6px;border-radius:4px;border:none;cursor:pointer;}
+.progress{width:100%;height:25px;background:#ddd;border-radius:10px;overflow:hidden;margin-top:10px;}
+#progressBar{width:0;height:100%;background:#28a745;transition:1s;}
+.hidden{display:none;}
+footer{text-align:center;background:#222;color:white;padding:15px;margin-top:30px;}
+form,textarea,input,select,button{transition:0.3s;}
+.review-stars span{cursor:pointer;font-size:20px;color:gold;}
+.review-stars span.gray{color:#ccc;}
+/* Dark mode */
+.dark-mode{background:#121212;color:white;}
+.dark-mode header{background:#000;}
+.dark-mode .restaurant-card,.dark-mode .menu-item,.dark-mode #cart,.dark-mode form, .dark-mode textarea, .dark-mode input, .dark-mode select, .dark-mode button{background:#1e1e1e;color:white !important;}
+.dark-mode input,.dark-mode select,.dark-mode textarea{background:#2a2a2a;color:white !important;}
+.dark-mode button{background:#28a745 !important;}
+@media(max-width:600px){.restaurant-grid{grid-template-columns:1fr;}.menu-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Uganda Restaurants Ordering & Reservation System</h1>
+<p>Browse restaurants, order food, and manage dashboard</p>
+<button id="modeToggle">Toggle Dark Mode</button>
+</header>
+
+<nav>
+<button id="customerTab" class="active">Customer View</button>
+<button id="adminTab">Admin Dashboard</button>
+</nav>
+
+<div id="customerSection">
+<div class="search">
+<input type="text" id="searchBar" placeholder="Search restaurants...">
+</div>
+
+<!-- PREVIEW SECTION -->
+<section id="previewSection">
+<h2 style="text-align:center;">Project Overview</h2>
+
+<div class="restaurant-grid">
+
+<div class="restaurant-card">
+<h3>Project Purpose</h3>
+<p>This system allows customers to explore multiple restaurants, compare menus, order food, and reserve tables online in one place.</p>
+</div>
+
+<div class="restaurant-card">
+<h3>Objectives</h3>
+<ul>
+<li>Provide access to multiple restaurants</li>
+<li>Enable online food ordering</li>
+<li>Support reservations and delivery tracking</li>
+<li>Improve customer convenience</li>
+</ul>
+</div>
+
+<div class="restaurant-card">
+<h3>Problems</h3>
+<ul>
+<li>Limited access to restaurant options</li>
+<li>Manual ordering delays</li>
+<li>Lack of centralized system</li>
+</ul>
+</div>
+
+<div class="restaurant-card">
+<h3>Causes</h3>
+<ul>
+<li>Traditional ordering systems</li>
+<li>No digital integration</li>
+</ul>
+</div>
+
+<div class="restaurant-card">
+<h3>Solutions</h3>
+<ul>
+<li>Create a unified restaurant platform</li>
+<li>Enable digital ordering & reservations</li>
+<li>Provide real-time updates</li>
+</ul>
+</div>
+
+</div>
+</section>
+
+<section>
+<h2>Restaurants</h2>
+<div id="restaurantContainer" class="restaurant-grid"></div>
+</section>
+
+<section id="restaurantSection" class="hidden">
+<h2 id="restaurantTitle"></h2>
+<p id="rating"></p>
+<iframe id="map" width="100%" height="250" style="border:0;" loading="lazy"></iframe>
+
+<h3>Menu</h3>
+<div id="menuContainer" class="menu-grid"></div>
+
+<h3>Cart</h3>
+<div id="cart"></div>
+<p id="total">Total: $0</p>
+<button onclick="placeOrder()">Place Order</button>
+
+<h3>Delivery Status</h3>
+<div class="progress"><div id="progressBar"></div></div>
+<p id="statusText">Waiting for order...</p>
+
+<h3>Customer Reviews</h3>
+<div class="review-stars" id="starRating"></div>
+<textarea id="reviewText" placeholder="Write your review"></textarea>
+<button onclick="addReview()">Submit Review</button>
+<ul id="reviews"></ul>
+
+<h3>Scan to Order</h3>
+<canvas id="qrcode"></canvas>
+
+<h3>Reserve Table</h3>
+<form id="reserveForm">
+<input type="text" placeholder="Name" required>
+<input type="text" placeholder="Phone" required>
+<input type="number" placeholder="Number of People" required>
+<input type="date" required>
+<input type="time" required>
+<p id="reservationNumber"></p>
+<button type="submit">Reserve</button>
+</form>
+</section>
+</div>
+
+<div id="adminSection" class="hidden">
+<h2>Admin Dashboard</h2>
+<canvas id="ordersChart"></canvas>
+</div>
+
+<footer>
+<p>Restaurant System Project © 2026</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// ===== Data =====
+const restaurants=[
+{name:"Pearl Kampala Bistro",rating:"⭐⭐⭐⭐⭐",map:"https://www.google.com/maps?q=Kampala&output=embed",image:"bistro.webp",menu:[
+{name:"Chicken Luwombo",price:12,image:"luwumbo.webp"},
+{name:"Beef Pilau",price:10,image:"pilau.webp"},
+{name:"Matoke",price:8,image:"matooke.webp"}]},
+{name:"Lake Victoria Grill",rating:"⭐⭐⭐⭐",map:"https://www.google.com/maps?q=Entebbe&output=embed",image:"victoria.webp",menu:[
+{name:"Grilled Fish",price:11,image:"tilapia.webp"},
+{name:"BBQ Chicken",price:10,image:"bbq.jpg"},
+{name:"Ugali & Sukuma",price:7,image:"ugali.jpg"}]},
+{name:"Savannah Spice Lounge",rating:"⭐⭐⭐⭐⭐",map:"https://www.google.com/maps?q=Jinja&output=embed",image:"spice.webp",menu:[
+{name:"Beef Steak",price:13,image:"steak.jpg"},
+{name:"Chicken Biryani",price:9,image:"bryani.jpg"},
+{name:"Vegetable Rolex",price:5,image:"vegetable.jpg"}]},
+{name:"Kabira Fusion Café",rating:"⭐⭐⭐⭐",map:"https://www.google.com/maps?q=Mbarara&output=embed",image:"kabira.webp",menu:[
+{name:"Grilled Goat",price:15,image:"grilled.jpg"},
+{name:"Pilau Rice",price:10,image:"rice.jpg"},
+{name:"Chapati & Beans",price:6,image:"chapati.webp"}]},
+{name:"Rwenzori Delights",rating:"⭐⭐⭐⭐⭐",map:"https://www.google.com/maps?q=Fort Portal&output=embed",image:"rwenzori.webp",menu:[
+{name:"Fried Tilapia",price:12,image:"fried.jpg"},
+{name:"Chicken Skewers",price:9,image:"skewer.jpg"},
+{name:"Cassava & Groundnut Sauce",price:7,image:"cassava.jpg"}]}];
+
+let cart=[],total=0,currentRating=0;
+
+// ===== Elements =====
+const restaurantContainer=document.getElementById("restaurantContainer");
+const restaurantSection=document.getElementById("restaurantSection");
+const restaurantTitle=document.getElementById("restaurantTitle");
+const ratingEl=document.getElementById("rating");
+const menuContainer=document.getElementById("menuContainer");
+const cartDiv=document.getElementById("cart");
+const map=document.getElementById("map");
+const reviewStars=document.getElementById("starRating");
+const reservationNumber=document.getElementById("reservationNumber");
+
+// ===== Display Restaurants =====
+function displayRestaurants(list){
+restaurantContainer.innerHTML="";
+list.forEach((res,index)=>{
+const card=document.createElement("div");
+card.className="restaurant-card";
+card.innerHTML=`<img src="${res.image}"><h3>${res.name}</h3><p>${res.rating}</p><button onclick="openRestaurant(${index})">View</button>`;
+restaurantContainer.appendChild(card);
+});
+}
+
+// ===== Open Restaurant =====
+function openRestaurant(index){
+restaurantSection.classList.remove("hidden");
+const res=restaurants[index];
+restaurantTitle.textContent=res.name;
+ratingEl.textContent="Rating: "+res.rating;
+map.src=res.map;
+menuContainer.innerHTML="";
+res.menu.forEach(item=>{
+const div=document.createElement("div");
+div.className="menu-item";
+div.innerHTML=`<img src="${item.image}"><h4>${item.name}</h4><p>$${item.price}</p><button onclick="addToCart('${item.name}',${item.price})">Add to Cart</button>`;
+menuContainer.appendChild(div);
+});
+generateQR();
+displayStars(0);
+updateCartDisplay();
+}
+
+// ===== Cart =====
+function addToCart(name,price){cart.push({name,price});total+=price;updateCartDisplay();}
+function removeFromCart(index){total-=cart[index].price;cart.splice(index,1);updateCartDisplay();}
+function updateCartDisplay(){cartDiv.innerHTML="";cart.forEach((item,i)=>{const div=document.createElement("div");div.className="cart-item";div.innerHTML=`${item.name} - $${item.price} <button onclick="removeFromCart(${i})">Remove</button>`;cartDiv.appendChild(div);});document.getElementById("total").textContent="Total: $"+total;}
+
+// ===== Place Order =====
+function placeOrder(){if(cart.length===0){alert("Cart empty");return;}alert("Order placed successfully!");cart=[];total=0;updateCartDisplay();startDelivery();}
+function startDelivery(){let progress=0;const bar=document.getElementById("progressBar");const text=document.getElementById("statusText");const interval=setInterval(()=>{progress+=25;bar.style.width=progress+"%";if(progress==25)text.textContent="Restaurant preparing food...";if(progress==50)text.textContent="Driver picking order...";if(progress==75)text.textContent="Order on the way...";if(progress==100){text.textContent="Order delivered!";clearInterval(interval);}},2000);}
+
+// ===== Reviews =====
+function displayStars(rating){reviewStars.innerHTML="";for(let i=1;i<=5;i++){const star=document.createElement("span");star.textContent="★";star.className=i>rating?"gray":"";star.addEventListener("click",()=>{displayStars(i);currentRating=i;});reviewStars.appendChild(star);}}
+function addReview(){let text=document.getElementById("reviewText").value;if(!text){alert("Write a review");return;}let li=document.createElement("li");li.textContent=`${"★".repeat(currentRating)} ${text}`;document.getElementById("reviews").appendChild(li);document.getElementById("reviewText").value="";currentRating=0;displayStars(0);}
+
+// ===== Search =====
+document.getElementById("searchBar").addEventListener("keyup",function(){const val=this.value.toLowerCase();displayRestaurants(restaurants.filter(r=>r.name.toLowerCase().includes(val)));});
+
+// ===== Reservation =====
+document.getElementById("reserveForm").addEventListener("submit",function(e){e.preventDefault();const num=Math.floor(1000+Math.random()*9000);reservationNumber.textContent=`Reservation Confirmed! #${num}`;alert("Table reserved! Your reservation number: "+num);});
+
+// ===== Dark Mode =====
+document.getElementById("modeToggle").addEventListener("click",()=>{document.body.classList.toggle("dark-mode");document.querySelectorAll('.restaurant-card,.menu-item,#cart,form,textarea,input,select,button').forEach(el=>el.classList.toggle('dark-mode'));});
+
+// ===== QR Code =====
+function generateQR(){QRCode.toCanvas(document.getElementById("qrcode"),window.location.href,function(e){if(e)console.error(e);});}
+
+// ===== Tabs =====
+const customerTab=document.getElementById("customerTab");
+const adminTab=document.getElementById("adminTab");
+const customerSectionDiv=document.getElementById("customerSection");
+const adminSectionDiv=document.getElementById("adminSection");
+customerTab.addEventListener("click",()=>{customerSectionDiv.style.display="block";adminSectionDiv.style.display="none";customerTab.classList.add("active");adminTab.classList.remove("active");});
+adminTab.addEventListener("click",()=>{customerSectionDiv.style.display="none";adminSectionDiv.style.display="block";customerTab.classList.remove("active");adminTab.classList.add("active");});
+
+// ===== Admin Chart =====
+const ctx=document.getElementById("ordersChart").getContext('2d');
+new Chart(ctx,{type:'bar',data:{labels:restaurants.map(r=>r.name),datasets:[{label:'Orders',data:[12,9,15,7,10],backgroundColor:'#007bff'}]},options:{responsive:true,plugins:{legend:{display:true}}}});
+
+// ===== Init =====
+displayRestaurants(restaurants);
+</script>
+</body>
+</html>
